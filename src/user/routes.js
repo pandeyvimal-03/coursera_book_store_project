@@ -9,7 +9,7 @@ user_routes.post("/register", (req, res) => {
       res.cookie('token' , token , {sameSite : "none" , httpOnly : true , maxAge : 900000}).send(success_service(response));
     })
     .catch((error) => {
-      res.send(fail_service(error));
+       res.send(fail_service(error));
     });
 });
 

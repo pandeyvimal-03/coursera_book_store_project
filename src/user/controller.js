@@ -6,11 +6,11 @@ import jwt from "jsonwebtoken";
 export async function register_controller(body) {
 
   const { name, mobile, email, password } = body;
- try{
+  try {
     const isUser = await user_model.findOne({ EMAIL: email });
-    
+
     if (isUser) {
-      return "user alredy registered with this email";
+      return Promise.reject("user alredy registered with this email");
     }
     const hash_password = await hashPassword(password);
     const user = new user_model({
@@ -19,37 +19,39 @@ export async function register_controller(body) {
       EMAIL: email,
       PASSWORD: hash_password,
     });
-  
+
     await user.save();
 
-  
+
 
     const token = generateToken(user._id)
-    return Promise.resolve({ response : "user registered successfully!" , token : token})
- }
- catch(err){
+
+    return Promise.resolve({ response: "user registered successfully!", token: token })
+  }
+  catch (err) {
 
     return Promise.reject(err)
- }
+  }
 }
 
 
 
 
 export async function login_controller(body) {
-  
+
   const { email, password } = body;
   try {
     const user = await user_model.findOne({ EMAIL: email });
-    
+
     if (user) {
-      const password_valid = await compare( password , user.PASSWORD);
-      
+      const password_valid = await compare(password, user.PASSWORD);
+
       if (password_valid) {
-       
+
         const token = generateToken(user._id)
-   
-        return Promise.resolve({ response : "user logedin successfully!" , token : token})
+        console.log("the token that we are returning is : ", token)
+
+        return Promise.resolve({ response: "user logedin successfully!", token: token })
       } else {
         return Promise.reject(false, "credential did not matched");
       }
@@ -61,13 +63,13 @@ export async function login_controller(body) {
   }
 }
 
- function generateToken(_id) {
+function generateToken(_id) {
   const data = {
     _id: _id,
   };
- 
+
   const token = jwt.sign(data, config.secret_key);
- 
+
   return token;
 }
 

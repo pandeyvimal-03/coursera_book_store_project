@@ -32,3 +32,14 @@ export async function get_books_by_author(author){
         return Promise.reject(err)
     }
 }
+
+export async function get_books_by_title(title){
+    try{
+        
+         const books = await books_modal.find({TITLE : title})
+          return Promise.resolve(books)
+    }
+    catch(err){
+        return Promise.reject(err)
+    }
+}
